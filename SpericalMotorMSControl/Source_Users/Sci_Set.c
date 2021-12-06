@@ -88,8 +88,8 @@ void ScibEchobackInit(void)
     ScibRegs.SCICTL1.all = 0x0003;  // enable TX, RX, internal SCICLK,
                                    // Disable RX ERR, SLEEP, TXWAKE
     ScibRegs.SCICTL2.all = 0x0003;
-    ScibRegs.SCICTL2.bit.TXINTENA = 1;
-    ScibRegs.SCICTL2.bit.RXBKINTENA = 1;
+    //ScibRegs.SCICTL2.bit.TXINTENA = 1;
+    //ScibRegs.SCICTL2.bit.RXBKINTENA = 1;
 
     //
     // SCIB at 9600 baud
@@ -105,9 +105,9 @@ void ScibEchobackInit(void)
     SciaRegs.SCIFFCT.all = 0x0;
 
     ScibRegs.SCICTL1.all = 0x0023;  // Relinquish SCI from Reset
-    ScibRegs.SCIFFRX.bit.RXFIFORESET=1;
+    //ScibRegs.SCIFFRX.bit.RXFIFORESET=1;
 
-    PieCtrlRegs.PIECTRL.bit.ENPIE = 1;   // Enable the PIE block
+    //PieCtrlRegs.PIECTRL.bit.ENPIE = 1;   // Enable the PIE block
 }
 
 void SciaTx8(int a)
@@ -143,16 +143,22 @@ interrupt void sciaRxFifoIsr(void)
         if(flag == 3){
             if(rx == 0x00BD){
                 flag--;
+                Ref_Buff[count] = rx;
+                count++;
             }
         }
         else if(flag == 2){
             if(rx == 0x00DB){
                 flag--;
+                Ref_Buff[count] = rx;
+                count++;
             }
         }
         else if(flag == 1){
             if(rx == 0x000A){
                 flag--;
+                Ref_Buff[count] = rx;
+                count++;
             }
         }
     }
@@ -163,8 +169,8 @@ interrupt void sciaRxFifoIsr(void)
         }
         if(count == 34){
             count = 0;
+            flag = 3;
         }
-
     }
     SciaRegs.SCIFFRX.bit.RXFFOVRCLR=1;   // Clear Overflow flag
     SciaRegs.SCIFFRX.bit.RXFFINTCLR=1;   // Clear Interrupt flag

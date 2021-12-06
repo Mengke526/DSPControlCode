@@ -124,8 +124,8 @@ void main(void)
         Ay = 0;
         wx = 0;
         wy = 0;
-        pidflag = 1;
-        gravityflag = 1;
+        pidflag = 0;
+        gravityflag = 0;
         stepflag = 0;
         sinflag = 0;
 
@@ -136,8 +136,8 @@ void main(void)
         }
         else if(sinflag)
         {
-            T[0] = Ax * sin(wx * t);
-            T[1] = Ay * sin(wy * t);
+            T[0] = Ax * sinf(wx * t);
+            T[1] = Ay * sinf(wy * t);
         }
         else
         {

@@ -13,4 +13,5 @@ extern __interrupt void cpu_timer0_isr(void);
 extern __interrupt void cpu_timer1_isr(void);
 extern __interrupt void cpu_timer2_isr(void);
 
+extern void CompareAngle2(void);
 #endif /* INCLUDE_USER_TIMER_SET_H_ */

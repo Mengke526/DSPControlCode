@@ -6,6 +6,7 @@
 #include "F28x_Project.h"
 #include "pid_control.h"
 #include "MY530HE.h"
+#include "Sci_Set.h"
 
 float t;
 
@@ -53,9 +54,7 @@ __interrupt void cpu_timer2_isr(void)
 {
    CpuTimer2.InterruptCount++;
 
-   Uint16 rdata;
-   rdata = angle[0]*1000;
-   ScibTx16(rdata);
+   CompareAngle2();
 
    // Acknowledge this interrupt to receive more interrupts from group 1
    PieCtrlRegs.PIEACK.all = PIEACK_GROUP1;
@@ -112,4 +111,54 @@ void TimerInit(void){
 
     // Enable TINT0 in the PIE: Group 1 interrupt 7
     PieCtrlRegs.PIEIER1.bit.INTx7 = 1;
+}
+
+typedef union
+{
+    float32 data;
+    Uint16 data8[2];
+} data_u;
+
+void CompareAngle2(void){
+    Uint16 CompareBuffer[12];
+    int cnt = 0;
+    //CompareBuffer[cnt++] = 0x03;
+    //CompareBuffer[cnt++] = 0xfc;
+    /*send a float_32 type data*/
+    data_u temp;
+    temp.data = 0;
+    CompareBuffer[cnt++] = temp.data8[0];
+    CompareBuffer[cnt++] = temp.data8[1];
+
+    temp.data = 0;
+    CompareBuffer[cnt++] = temp.data8[0];
+    CompareBuffer[cnt++] = temp.data8[1];
+
+    temp.data = 0;
+    CompareBuffer[cnt++] = temp.data8[0];
+    CompareBuffer[cnt++] = temp.data8[1];
+
+    temp.data = angle[0];
+    CompareBuffer[cnt++] = temp.data8[0];
+    CompareBuffer[cnt++] = temp.data8[1];
+
+    temp.data = angle[1];
+    CompareBuffer[cnt++] = temp.data8[0];
+    CompareBuffer[cnt++] = temp.data8[1];
+
+    temp.data = angle[2];
+    CompareBuffer[cnt++] = temp.data8[0];
+    CompareBuffer[cnt++] = temp.data8[1];
+
+    //CompareBuffer[cnt++] = 0xfc;
+    //CompareBuffer[cnt++] = 0x03;
+
+    int i;
+    ScibTx8(0x03);
+    ScibTx8(0xfc);
+    for(i = 0;i < 12;i++){
+        ScibTx16(CompareBuffer[i]);
+    }
+    ScibTx8(0xfc);
+    ScibTx8(0x03);
 }
